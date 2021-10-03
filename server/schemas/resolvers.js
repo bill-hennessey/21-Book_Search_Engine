@@ -12,50 +12,27 @@ const resolvers = {
 
   // update
   Mutation: {
-    addProfile: async (parent, { name, email, password }) => {
-      const profile = await Profile.create({ name, email, password });
-      const token = signToken(profile);
+    addUser: async (parent, { name, email, password }) => {
+      const newUser = await User.create({ name, email, password });
+      const token = signToken(newUser);
 
-      return { token, profile };
+      return { token, newUser };
     },
     login: async (parent, { email, password }) => {
-      const profile = await Profile.findOne({ email });
+      const existingUser = await User.findOne({ email });
 
-      if (!profile) {
-        throw new AuthenticationError("No profile with this email found!");
+      if (!existingUser) {
+        throw new AuthenticationError("No user with this email found!");
       }
 
-      const correctPw = await profile.isCorrectPassword(password);
+      const correctPw = await existingUser.isCorrectPassword(password);
 
       if (!correctPw) {
         throw new AuthenticationError("Incorrect password!");
       }
 
-      const token = signToken(profile);
-      return { token, profile };
-    },
-
-    addSkill: async (parent, { profileId, skill }) => {
-      return Profile.findOneAndUpdate(
-        { _id: profileId },
-        {
-          $addToSet: { skills: skill },
-        },
-        {
-          new: true,
-          runValidators: true,
-        }
-      );
-    },
-    removeProfile: async (parent, { profileId }) => {
-      return Profile.findOneAndDelete({ _id: profileId });
-    },
-    removeSkill: async (parent, { profileId, skill }) => {
-      return Profile.findOneAndUpdate(
-        { _id: profileId },
-        { $pull: { skills: skill } },
-        { new: true }
-      );
+      const token = signToken(existingUser);
+      return { token, existingUser };
     },
   },
 };
