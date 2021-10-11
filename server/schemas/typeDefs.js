@@ -10,9 +10,9 @@ const typeDefs = gql`
     #ready but I question saveBook
     login(email: String!, password: String!): Auth
     addUser(userName: String!, email: String!, password: String!): User
-    removeBook(bookId: bookID!): User
+    removeBook(bookId: ID!): User
     saveBook(
-      authors: [authors]
+      authors: [String]
       description: String!
       title: String!
       bookId: Int
@@ -22,7 +22,7 @@ const typeDefs = gql`
   }
 
   type Book {
-    bookId: bookId
+    bookId: ID
     authors: [String]
     description: String
     title: String!
